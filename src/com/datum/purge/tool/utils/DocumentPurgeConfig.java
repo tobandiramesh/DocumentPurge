@@ -17,6 +17,8 @@ class DocumentPurgeConfig
 	final static String CE_DOCUMENTCLASS_NAME = "Document.Purge.System.DocumentClass";	
 	final static String CE_SEARCHFIELDS ="Document.Purge.System.SearchFields.SymbolicNames";
 	final static String TOOL_INPUTFILE_PATH =  "Document.Purge.System.SearchData.FilePath";
+	
+	final static String TOOL_PROCESS_THREADS =  "Document.Purge.System.Thread.Count";
 
 	final static String TOOL_CONFIGURATION_FILENAME = "Document-Purge-Tool.properties";
 }

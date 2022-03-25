@@ -23,6 +23,7 @@ public class DocumentPurgeConfigLoader
 	public static String ce_URI = "";
 	public static String ce_SearchFields = "";
 	public static String tool_InputFilePath = "";
+	public static int tool_processThread = 1;
 	static String className = "DocumentPurgeToolConfigLoader";
 
 
@@ -45,7 +46,12 @@ public class DocumentPurgeConfigLoader
 			tool_InputFilePath  = 	configuration.getProperty(DocumentPurgeConfig.TOOL_INPUTFILE_PATH).trim();
 			ce_DocumentClass  = 	configuration.getProperty(DocumentPurgeConfig.CE_DOCUMENTCLASS_NAME).trim();
 			ce_SearchFields  = 	configuration.getProperty(DocumentPurgeConfig.CE_SEARCHFIELDS).trim();
-
+			
+			try{				
+				tool_processThread  = 	Integer.parseInt(configuration.getProperty(DocumentPurgeConfig.TOOL_PROCESS_THREADS).trim());
+			}catch(Exception exception){
+				DocumentPurgeLogger.writeLog(className, methodName, DocumentPurgeLogger.DEBUG, " Default 1 process thread has been assigned ");
+			}
 
 		}		
 		catch (Exception exception) 

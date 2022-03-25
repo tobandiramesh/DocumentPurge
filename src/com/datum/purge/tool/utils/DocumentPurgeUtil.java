@@ -31,10 +31,6 @@ public class DocumentPurgeUtil {
 		{
 		DocumentPurgeLogger.writeLog(className, methodName, DocumentPurgeLogger.DEBUG, "Starting..");
 
-		DocumentPurgeConfigLoader objPurgeConfigLoader = new DocumentPurgeConfigLoader();
-		objPurgeConfigLoader.loadDocumentPurgeToolConfigurartion();
-		DocumentPurgeLogger.writeLog(className, methodName, DocumentPurgeLogger.DEBUG, "Tool Configured values are \n"+objPurgeConfigLoader.toString());
-
 		connection 	= 	Factory.Connection.getConnection(DocumentPurgeConfigLoader.ce_URI);
 		subject 	= 	UserContext.createSubject(connection, DocumentPurgeConfigLoader.ce_UserID, DocumentPurgeConfigLoader.ce_Password, null);
 		userContext = 	UserContext.get();
