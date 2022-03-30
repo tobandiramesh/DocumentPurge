@@ -58,14 +58,14 @@ public class DocumentPurgeExecutor extends Thread {
 
 					} else if (cell.getCellType() == Cell.CELL_TYPE_BLANK) { // Blank
 						searchSQLQuery
-								.append(DocumentPurgeConfigLoader.ce_SearchFields.split(",")[cell.getColumnIndex()]
-										+ " is NULL");
+						.append(DocumentPurgeConfigLoader.ce_SearchFields.split(",")[cell.getColumnIndex()]
+								+ " is NULL");
 						rowStatus.append(" NULL ");
 
 					} else if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) { // Boolean
 						searchSQLQuery
-								.append(DocumentPurgeConfigLoader.ce_SearchFields.split(",")[cell.getColumnIndex()]
-										+ " is NULL");
+						.append(DocumentPurgeConfigLoader.ce_SearchFields.split(",")[cell.getColumnIndex()]
+								+ " is NULL");
 						searchSQLQuery.append(cell.getBooleanCellValue());
 						rowStatus.append(cell.getBooleanCellValue());
 
@@ -101,12 +101,19 @@ public class DocumentPurgeExecutor extends Thread {
 
 						String name = document.get_Name();
 						String id = document.get_Id().toString();
+						try{
+							document.delete();
+							document.save(RefreshMode.REFRESH);
+							
+							DocumentPurgeLogger.writeLog(className, methodName, DocumentPurgeLogger.DEBUG,
+									"\n Document Name: " + name + " Document Id: " + id + " has been deleted");
+							
+						} catch (Exception exception) {
 
-						document.delete();
-						document.save(RefreshMode.REFRESH);
-
-						DocumentPurgeLogger.writeLog(className, methodName, DocumentPurgeLogger.DEBUG,
-								"\n Document Name: " + name + " Document Id: " + id + " has been deleted");
+							DocumentPurgeLogger.writeLog(className, methodName, DocumentPurgeLogger.DEBUG, exception.getMessage());
+						}
+						
+						
 
 						/*
 						 * DocumentPurgeLogger.writeLog(className, methodName,
@@ -126,9 +133,10 @@ public class DocumentPurgeExecutor extends Thread {
 					 * "} Document(s) have been deleted for Policy Number [" + policyNumber +
 					 * "] and Customer Number [" + customerNumber + "]");
 					 */
-					
+
 					rowStatus.append(",");
 					rowStatus.append(docCount);
+					rowStatus.append(",");
 					rowStatus.append(" document(s) deleted ");
 
 				} else {
@@ -139,9 +147,10 @@ public class DocumentPurgeExecutor extends Thread {
 					 * "\n No Document(s) have been found for Policy Number [" + policyNumber +
 					 * "] and Customer Number [" + customerNumber + "]");
 					 */
-					
+
 					rowStatus.append(",");
 					rowStatus.append(0);
+					rowStatus.append(",");
 					rowStatus.append(" No documents found ");
 				}
 				rowCount++;
@@ -163,6 +172,10 @@ public class DocumentPurgeExecutor extends Thread {
 				csvWriter.append(reportData);
 				csvWriter.flush();
 				csvWriter.close();
+				DocumentPurgeLogger.writeLog(className, methodName, DocumentPurgeLogger.DEBUG,
+						"Report has been generated.");
+				DocumentPurgeLogger.writeLog(className, methodName, DocumentPurgeLogger.DEBUG,
+						"DocumentPurgeTool execution has been completed.");
 			}
 
 		} catch (Exception exception) {
