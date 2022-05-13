@@ -1,12 +1,7 @@
 package com.datum.purge.tool;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.Iterator;
-
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import java.io.BufferedReader;
+import java.io.FileReader;
 
 import com.datum.purge.tool.utils.DocumentPurgeConfigLoader;
 import com.datum.purge.tool.utils.DocumentPurgeExecutor;
@@ -19,17 +14,15 @@ import com.datum.purge.tool.utils.DocumentPurgeLogger;
  * @version 1.0
  *
  */
+
 public class DocumentPurgeTool {
 
 	public String className = "DocumentPurgeTool";
-	public static Iterator<Row> rowIterator = null;
+	public static BufferedReader csvDataReader = null;
 	public static int rowTotalCount = 0;
 
 	public void runDocumentPurgeTool() {
 
-		FileInputStream toolInputFile = null;
-		XSSFWorkbook workbook = null;
-		XSSFSheet sheet = null;
 
 		String methodName = "runDocumentPurgeTool";
 
@@ -42,14 +35,13 @@ public class DocumentPurgeTool {
 			DocumentPurgeLogger.writeLog(className, methodName, DocumentPurgeLogger.DEBUG,
 					"Tool Configured values are \n" + objPurgeConfigLoader.toString());
 
-			toolInputFile = new FileInputStream(new File(DocumentPurgeConfigLoader.tool_InputFilePath));
-			workbook = new XSSFWorkbook(toolInputFile);
-			sheet = workbook.getSheetAt(0);
-
-			rowTotalCount = sheet.getLastRowNum();
-
-			rowIterator = sheet.iterator();
-			rowIterator.next();
+			csvDataReader = new BufferedReader(new FileReader(DocumentPurgeConfigLoader.tool_InputFilePath));  
+	
+			BufferedReader dataCountReader = new BufferedReader(new FileReader(DocumentPurgeConfigLoader.tool_InputFilePath));
+			
+			while(dataCountReader.readLine() != null) rowTotalCount++;
+			
+			dataCountReader.close();
 
 			int noOfThreads = DocumentPurgeConfigLoader.tool_processThread;
 
@@ -57,15 +49,11 @@ public class DocumentPurgeTool {
 				DocumentPurgeExecutor documentPurgeExecutorThread = new DocumentPurgeExecutor();
 				documentPurgeExecutorThread.start();
 			}
-			toolInputFile.close();
 
 		} catch (Exception exception) {
 			DocumentPurgeLogger.writeErrorLog(className, methodName, "***Exception Occured***", exception);
 		} finally {
 
-			toolInputFile = null;
-			workbook = null;
-			sheet = null;
 		}
 	}
 
@@ -74,5 +62,6 @@ public class DocumentPurgeTool {
 		DocumentPurgeTool objDocumentPurgeTool = new DocumentPurgeTool();
 		objDocumentPurgeTool.runDocumentPurgeTool();
 	}
+
 
 }
