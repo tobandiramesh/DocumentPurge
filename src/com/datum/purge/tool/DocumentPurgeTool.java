@@ -52,8 +52,6 @@ public class DocumentPurgeTool {
 
 		} catch (Exception exception) {
 			DocumentPurgeLogger.writeErrorLog(className, methodName, "***Exception Occured***", exception);
-		} finally {
-
 		}
 	}
 
