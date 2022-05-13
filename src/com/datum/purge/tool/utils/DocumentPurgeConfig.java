@@ -14,7 +14,6 @@ class DocumentPurgeConfig {
 	final static String CE_DOMAIN = "Document.Purge.System.Domain";
 
 	final static String CE_OBJECTSTORE_NAME = "Document.Purge.System.ObjectStore";
-	final static String CE_DOCUMENTCLASS_NAME = "Document.Purge.System.DocumentClass";
 	final static String CE_SEARCHFIELDS = "Document.Purge.System.SearchFields.SymbolicNames";
 	final static String TOOL_INPUTFILE_PATH = "Document.Purge.System.SearchData.FilePath";
 

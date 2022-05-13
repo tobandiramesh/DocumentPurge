@@ -18,7 +18,6 @@ public class DocumentPurgeConfigLoader {
 	public static String ce_Password = "";
 	public static String ce_Domain = "";
 	public static String ce_ObjectStoreName = "";
-	public static String ce_DocumentClass = "";
 	public static String ce_URI = "";
 	public static String ce_SearchFields = "";
 	public static String tool_InputFilePath = "";
@@ -40,7 +39,6 @@ public class DocumentPurgeConfigLoader {
 			ce_Domain = configuration.getProperty(DocumentPurgeConfig.CE_DOMAIN).trim();
 			ce_ObjectStoreName = configuration.getProperty(DocumentPurgeConfig.CE_OBJECTSTORE_NAME).trim();
 			tool_InputFilePath = configuration.getProperty(DocumentPurgeConfig.TOOL_INPUTFILE_PATH).trim();
-			ce_DocumentClass = configuration.getProperty(DocumentPurgeConfig.CE_DOCUMENTCLASS_NAME).trim();
 			ce_SearchFields = configuration.getProperty(DocumentPurgeConfig.CE_SEARCHFIELDS).trim();
 
 			try {
@@ -63,7 +61,7 @@ public class DocumentPurgeConfigLoader {
 
 	@Override
 	public String toString() {
-		return " CE User[" + ce_UserID + "] \n CE URI[" + ce_URI + "]\n CE Document Class[" + ce_DocumentClass + "]\n"
+		return " CE User[" + ce_UserID + "] \n CE URI[" + ce_URI + "] \n"
 				+ " CE DOCMAIN [" + ce_Domain + "]\n CE ObjectStore Name [" + ce_ObjectStoreName
 				+ "]\n Input File Path [" + tool_InputFilePath + "]\n Search Fields [" + ce_SearchFields + "]\n";
 	}
