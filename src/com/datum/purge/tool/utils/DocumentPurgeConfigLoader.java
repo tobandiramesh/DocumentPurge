@@ -20,6 +20,8 @@ public class DocumentPurgeConfigLoader {
 	public static String ce_ObjectStoreName = "";
 	public static String ce_URI = "";
 	public static String ce_SearchFields = "";
+	public static String ce_field_operators = "";
+	public static String timezone_offset = "";
 	public static String tool_InputFilePath = "";
 	public static int tool_processThread = 1;
 	static String className = "DocumentPurgeToolConfigLoader";
@@ -40,6 +42,8 @@ public class DocumentPurgeConfigLoader {
 			ce_ObjectStoreName = configuration.getProperty(DocumentPurgeConfig.CE_OBJECTSTORE_NAME).trim();
 			tool_InputFilePath = configuration.getProperty(DocumentPurgeConfig.TOOL_INPUTFILE_PATH).trim();
 			ce_SearchFields = configuration.getProperty(DocumentPurgeConfig.CE_SEARCHFIELDS).trim();
+			ce_field_operators = configuration.getProperty(DocumentPurgeConfig.CE_FIELD_OPERATORS.trim());
+			timezone_offset = configuration.getProperty(DocumentPurgeConfig.TIMEZONE_OFFSET.trim());
 
 			try {
 				tool_processThread = Integer
