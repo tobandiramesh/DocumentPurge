@@ -17,9 +17,9 @@ import com.datum.purge.tool.utils.DocumentPurgeLogger;
 
 public class DocumentPurgeTool {
 
-	public String className = "DocumentPurgeTool";
-	public static BufferedReader csvDataReader = null;
-	public static int rowTotalCount = 0;
+	public String CLASS_NAME = "DocumentPurgeTool";
+	public static BufferedReader CSV_DATA_READER = null;
+	public static int ROW_TOTAL_COUNT = 0;
 
 	public void runDocumentPurgeTool() {
 
@@ -28,18 +28,17 @@ public class DocumentPurgeTool {
 
 		try {
 
-			DocumentPurgeLogger.writeLog(className, methodName, DocumentPurgeLogger.DEBUG, "Starting..");
+			DocumentPurgeLogger.writeLog(CLASS_NAME, methodName, DocumentPurgeLogger.DEBUG, "Starting..");
 
 			DocumentPurgeConfigLoader objPurgeConfigLoader = new DocumentPurgeConfigLoader();
 			objPurgeConfigLoader.loadDocumentPurgeToolConfigurartion();
-			DocumentPurgeLogger.writeLog(className, methodName, DocumentPurgeLogger.DEBUG,
-					"Tool Configured values are \n" + objPurgeConfigLoader.toString());
+			DocumentPurgeLogger.writeLog(CLASS_NAME, methodName, DocumentPurgeLogger.DEBUG, "Tool Configured values are \n" + objPurgeConfigLoader.toString());
 
-			csvDataReader = new BufferedReader(new FileReader(DocumentPurgeConfigLoader.tool_InputFilePath));  
+			CSV_DATA_READER = new BufferedReader(new FileReader(DocumentPurgeConfigLoader.tool_InputFilePath));  
 	
 			BufferedReader dataCountReader = new BufferedReader(new FileReader(DocumentPurgeConfigLoader.tool_InputFilePath));
 			
-			while(dataCountReader.readLine() != null) rowTotalCount++;
+			while(dataCountReader.readLine() != null) ROW_TOTAL_COUNT++;
 			
 			dataCountReader.close();
 
@@ -51,7 +50,7 @@ public class DocumentPurgeTool {
 			}
 
 		} catch (Exception exception) {
-			DocumentPurgeLogger.writeErrorLog(className, methodName, "***Exception Occured***", exception);
+			DocumentPurgeLogger.writeErrorLog(CLASS_NAME, methodName, "***Exception Occured***", exception);
 		}
 	}
 
