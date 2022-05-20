@@ -21,6 +21,7 @@ public class DocumentPurgeConfigLoader {
 	public static String ce_URI = "";
 	public static String ce_SearchFields = "";
 	public static String ce_field_operators = "";
+	public static String report_headers = "";
 	public static String timezone_offset = "";
 	public static String tool_InputFilePath = "";
 	public static int tool_processThread = 1;
@@ -42,9 +43,14 @@ public class DocumentPurgeConfigLoader {
 			ce_ObjectStoreName = configuration.getProperty(DocumentPurgeConfig.CE_OBJECTSTORE_NAME).trim();
 			tool_InputFilePath = configuration.getProperty(DocumentPurgeConfig.TOOL_INPUTFILE_PATH).trim();
 			ce_SearchFields = configuration.getProperty(DocumentPurgeConfig.CE_SEARCHFIELDS).trim();
+			report_headers = configuration.getProperty(DocumentPurgeConfig.REPORT_HEADERS).trim();
 			ce_field_operators = configuration.getProperty(DocumentPurgeConfig.CE_FIELD_OPERATORS.trim());
 			timezone_offset = configuration.getProperty(DocumentPurgeConfig.TIMEZONE_OFFSET.trim());
 
+			if(ce_SearchFields.split(",").length != ce_field_operators.split(",").length)
+			{
+				throw new Exception("Invalid configuration found for SearchFields and corresponding operators");
+			}
 			try {
 				tool_processThread = Integer
 						.parseInt(configuration.getProperty(DocumentPurgeConfig.TOOL_PROCESS_THREADS).trim());
@@ -67,6 +73,6 @@ public class DocumentPurgeConfigLoader {
 	public String toString() {
 		return " CE User[" + ce_UserID + "] \n CE URI[" + ce_URI + "] \n"
 				+ " CE DOCMAIN [" + ce_Domain + "]\n CE ObjectStore Name [" + ce_ObjectStoreName
-				+ "]\n Input File Path [" + tool_InputFilePath + "]\n Search Fields [" + ce_SearchFields + "]\n";
+				+ "]\n Input File Path [" + tool_InputFilePath + "]\n Search Fields [" + ce_SearchFields + "]\n Field Operators [" + ce_field_operators + "]\n Timezone Offset Fields [" + timezone_offset + "]\n Report Headers [" + report_headers + "]\n";
 	}
 }
