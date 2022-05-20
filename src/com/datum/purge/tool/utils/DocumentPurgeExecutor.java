@@ -125,7 +125,7 @@ public class DocumentPurgeExecutor extends Thread {
 					csvWriter.append(",");
 					csvWriter.append("From Date");
 					csvWriter.append(",");
-					csvWriter.append("Document Date");
+					csvWriter.append("To Date");
 					csvWriter.append(",");
 					csvWriter.append("No'of Docs");
 					csvWriter.append(",");

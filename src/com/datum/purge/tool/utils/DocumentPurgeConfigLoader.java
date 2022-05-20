@@ -26,13 +26,13 @@ public class DocumentPurgeConfigLoader {
 	public static int tool_processThread = 1;
 	static String className = "DocumentPurgeToolConfigLoader";
 
-	public void loadDocumentPurgeToolConfigurartion() throws Exception {
+	public void loadDocumentPurgeToolConfigurartion(String configFile) throws Exception {
 		String methodName = "loadDocumentPurgeToolConfigurartion";
 		try {
 			DocumentPurgeLogger.writeLog(className, methodName, DocumentPurgeLogger.DEBUG, "Starting...");
 
 			Properties configuration = new Properties();
-			InputStream input = new FileInputStream(DocumentPurgeConfig.TOOL_CONFIGURATION_FILENAME);
+			InputStream input = new FileInputStream(configFile);
 			configuration.load(input);
 
 			ce_URI = configuration.getProperty(DocumentPurgeConfig.CE_URI).trim();

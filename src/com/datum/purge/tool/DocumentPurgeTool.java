@@ -21,8 +21,7 @@ public class DocumentPurgeTool {
 	public static BufferedReader CSV_DATA_READER = null;
 	public static int ROW_TOTAL_COUNT = 0;
 
-	public void runDocumentPurgeTool() {
-
+	public void runDocumentPurgeTool(String configFile) {
 
 		String methodName = "runDocumentPurgeTool";
 
@@ -31,7 +30,7 @@ public class DocumentPurgeTool {
 			DocumentPurgeLogger.writeLog(CLASS_NAME, methodName, DocumentPurgeLogger.DEBUG, "Starting..");
 
 			DocumentPurgeConfigLoader objPurgeConfigLoader = new DocumentPurgeConfigLoader();
-			objPurgeConfigLoader.loadDocumentPurgeToolConfigurartion();
+			objPurgeConfigLoader.loadDocumentPurgeToolConfigurartion(configFile);
 			DocumentPurgeLogger.writeLog(CLASS_NAME, methodName, DocumentPurgeLogger.DEBUG, "Tool Configured values are \n" + objPurgeConfigLoader.toString());
 
 			CSV_DATA_READER = new BufferedReader(new FileReader(DocumentPurgeConfigLoader.tool_InputFilePath));  
@@ -57,8 +56,7 @@ public class DocumentPurgeTool {
 	public static void main(String[] args) throws Exception {
 
 		DocumentPurgeTool objDocumentPurgeTool = new DocumentPurgeTool();
-		objDocumentPurgeTool.runDocumentPurgeTool();
+		objDocumentPurgeTool.runDocumentPurgeTool(args[0]);
 	}
-
 
 }
