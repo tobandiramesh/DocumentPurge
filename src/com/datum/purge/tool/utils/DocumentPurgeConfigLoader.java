@@ -24,6 +24,8 @@ public class DocumentPurgeConfigLoader {
 	public static String report_headers = "";
 	public static String timezone_offset = "";
 	public static String tool_InputFilePath = "";
+	public static String ce_upload_docClass = "";
+	public static String ce_upload_folderPath = "";
 	public static int tool_processThread = 1;
 	static String className = "DocumentPurgeToolConfigLoader";
 
@@ -46,6 +48,8 @@ public class DocumentPurgeConfigLoader {
 			report_headers = configuration.getProperty(DocumentPurgeConfig.REPORT_HEADERS).trim();
 			ce_field_operators = configuration.getProperty(DocumentPurgeConfig.CE_FIELD_OPERATORS.trim());
 			timezone_offset = configuration.getProperty(DocumentPurgeConfig.TIMEZONE_OFFSET.trim());
+			ce_upload_docClass = configuration.getProperty(DocumentPurgeConfig.CE_UPLOAD_DOCCLASS);
+			ce_upload_folderPath = configuration.getProperty(DocumentPurgeConfig.CE_UPLOAD_FOLDER_PATH);
 
 			if(ce_SearchFields.split(",").length != ce_field_operators.split(",").length)
 			{

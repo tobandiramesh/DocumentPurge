@@ -15,6 +15,8 @@ class DocumentPurgeConfig {
 
 	final static String CE_OBJECTSTORE_NAME = "Document.Purge.System.ObjectStore";
 	final static String CE_SEARCHFIELDS = "Document.Purge.System.SearchFields.SymbolicNames";
+	final static String CE_UPLOAD_DOCCLASS = "Document.Purge.System.Upload.DocumentClass";
+	final static String CE_UPLOAD_FOLDER_PATH = "Document.Purge.System.Upload.FolderPath";
 	final static String REPORT_HEADERS =  "Document.Purge.System.Report.Headers";
 	final static String CE_FIELD_OPERATORS = "Document.Purge.System.SearchFields.Operators";
 	final static String TIMEZONE_OFFSET = "Document.Purge.System.SearchFields.TimeZoneOffset";
