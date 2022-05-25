@@ -1,11 +1,6 @@
 package com.datum.purge.tool.utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -40,6 +35,10 @@ public class DocumentPurgeExecutor extends Thread {
 	public String REPORT_NAME = "DeletionReport_" + new Date().getTime() + ".csv";
 	private ReentrantLock reentrantLock = new ReentrantLock();
 
+
+	/**
+	 * This method is used to run the purge utility and uploads the report into ECM system.
+	 */
 	@Override
 	public void run() {
 
@@ -165,93 +164,140 @@ public class DocumentPurgeExecutor extends Thread {
 
 					DocumentPurgeLogger.writeLog(CLASS_NAME, methodName, DocumentPurgeLogger.DEBUG,
 							"Report Data \n" + REPORT_DATA);
-					FileWriter csvWriter = new FileWriter(REPORT_NAME);
-					csvWriter.append("Document Class");
-					csvWriter.append(",");
+					StringBuilder finalReport = new StringBuilder();
+
+					finalReport.append("Document Class");
+					finalReport.append(",");
 
 					for (int reportHeaderCount = 0; reportHeaderCount < reportHeaders.length; reportHeaderCount++) {
-						csvWriter.append(reportHeaders[reportHeaderCount]);
-						csvWriter.append(",");
+						finalReport.append(reportHeaders[reportHeaderCount]);
+						finalReport.append(",");
 					}
 
-					csvWriter.append("No'of Docs");
-					csvWriter.append(",");
-					csvWriter.append("Status");
-					csvWriter.append("\n");
-					csvWriter.append(REPORT_DATA);
-					csvWriter.flush();
-					csvWriter.close();
+					finalReport.append("No'of Docs");
+					finalReport.append(",");
+					finalReport.append("Status");
+					finalReport.append("\n");
+					finalReport.append(REPORT_DATA);
+
 					DocumentPurgeLogger.writeLog(CLASS_NAME, methodName, DocumentPurgeLogger.DEBUG,
-							"Report has been generated.");
-					DocumentPurgeLogger.writeLog(CLASS_NAME, methodName, DocumentPurgeLogger.DEBUG,
-							"DocumentPurgeTool execution has been completed.");
+							"Report has been generated. \n "+finalReport.toString());
+
 
 					// Upload the generated report to FileNet
 					if (reentrantLock.tryLock(0, TimeUnit.SECONDS)) {
-						UploadReport(new File(REPORT_NAME), objectStore);
+						uploadReport(finalReport.toString(), objectStore);
+						DocumentPurgeLogger.writeLog(CLASS_NAME, methodName, DocumentPurgeLogger.DEBUG,
+								"DocumentPurgeTool execution has been completed.");
 					}					
 				}
 			}
 		} catch (Exception exception) {
 
 			DocumentPurgeLogger.writeErrorLog(CLASS_NAME, methodName, "Exception Occured", exception);
-			DocumentPurgeLogger.writeLog(CLASS_NAME, methodName, DocumentPurgeLogger.DEBUG,
-					"\n Report data \n" + REPORT_DATA);
+			DocumentPurgeLogger.writeLog(CLASS_NAME, methodName, DocumentPurgeLogger.DEBUG, "\n Report data \n" + REPORT_DATA);
 
 		}
 	}
 
+	/**
+	 * This method is used to upload the report file to the configured folder path.
+	 * @param finalReport
+	 * @param objectStore
+	 * @throws Exception
+	 */
 	@SuppressWarnings("unchecked")
-	private void UploadReport(File file, ObjectStore objectStore) {
+	private void uploadReport(String finalReport, ObjectStore objectStore) throws Exception {
 
-		Document doc = Factory.Document.createInstance(objectStore, DocumentPurgeConfigLoader.ce_upload_docClass);
-		doc.getProperties().putValue("DocumentTitle", REPORT_NAME);
+		Document reportDocument = Factory.Document.createInstance(objectStore, DocumentPurgeConfigLoader.ce_upload_docClass);
+		reportDocument.getProperties().putValue("DocumentTitle", REPORT_NAME);
 
 		// Set content
-		ContentElementList contentList = Factory.ContentElement.createList();
-		ContentTransfer ct = Factory.ContentTransfer.createInstance();
-		InputStream inputStream = null;
-		if (file.exists()) {
-			try {
-				inputStream = new FileInputStream(file);
-			} catch (FileNotFoundException e) {
-				System.err.println(file.getAbsolutePath() + " does not exist.");
-				e.printStackTrace();
-			}
-			ct.setCaptureSource(inputStream);
-			ct.set_RetrievalName(REPORT_NAME);
-			contentList.add(ct);
-			doc.set_ContentElements(contentList);
-			doc.set_MimeType("text/plain");
-			doc.save(RefreshMode.NO_REFRESH);
-			try {
-				inputStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		ContentElementList reportContentList = Factory.ContentElement.createList();
+		ContentTransfer reportContent = Factory.ContentTransfer.createInstance();
+		reportContent.setCaptureSource(new ByteArrayInputStream(finalReport.getBytes()));
+		reportContent.set_RetrievalName(REPORT_NAME);
+		reportContentList.add(reportContent);
 
-			doc.checkin(AutoClassify.DO_NOT_AUTO_CLASSIFY, CheckinType.MAJOR_VERSION);
-			doc.save(RefreshMode.NO_REFRESH);
-			String[] props = { "ID", "ClassDescription" };
-			doc.fetchProperties(props);
-			System.out.println("Report uploaded: " + doc.get_Id());
+		reportDocument.set_ContentElements(reportContentList);
+		reportDocument.set_MimeType("text/plain");
 
-			// File the document into folder
-			com.filenet.api.core.Folder folder = Factory.Folder.getInstance(objectStore, "Folder",
-					DocumentPurgeConfigLoader.ce_upload_folderPath);
-			ReferentialContainmentRelationship rcr = folder.file(doc, AutoUniqueName.AUTO_UNIQUE, REPORT_NAME,
-					DefineSecurityParentage.DO_NOT_DEFINE_SECURITY_PARENTAGE);
-			rcr.save(RefreshMode.NO_REFRESH);
 
-			// Delete the local file
-			file.delete();
-		} else {
-			System.err.println("Report not found or already uploaded.");
-		}
+		reportDocument.checkin(AutoClassify.DO_NOT_AUTO_CLASSIFY, CheckinType.MAJOR_VERSION);
+		reportDocument.save(RefreshMode.NO_REFRESH);
+
+
+		String[] props = { "ID", "ClassDescription" };
+		reportDocument.fetchProperties(props);
+
+		DocumentPurgeLogger.writeLog(CLASS_NAME, "uploadReport", DocumentPurgeLogger.DEBUG, "Report Id is:"+ reportDocument.get_Id());
+
+		// File the document into folder
+		com.filenet.api.core.Folder folder = Factory.Folder.getInstance(objectStore, "Folder", fetchFolderPath(objectStore));
+		ReferentialContainmentRelationship rcr = folder.file(reportDocument, AutoUniqueName.AUTO_UNIQUE, REPORT_NAME,DefineSecurityParentage.DO_NOT_DEFINE_SECURITY_PARENTAGE);
+		rcr.save(RefreshMode.NO_REFRESH);
+
 
 		reentrantLock.unlock();
 	}
 
+	/**
+	 * This method is used to check the configured folder path, if path not exists, it creates folder with /Year/Month-Name.
+	 * @param objectStore
+	 * @return Folder path.
+	 */
+	private String fetchFolderPath(ObjectStore objectStore)
+	{
+
+		com.filenet.api.core.Folder folder = null;
+		String report_upload_folderPath = DocumentPurgeConfigLoader.ce_upload_folderPath;
+		
+		try
+		{
+			folder = Factory.Folder.fetchInstance(objectStore, report_upload_folderPath, null);
+
+		}catch(Exception exception)
+		{
+			Calendar calendar = Calendar.getInstance();
+			int reportYear = calendar.get(Calendar.YEAR);
+			String reportMonth =new SimpleDateFormat("MMMM").format(calendar.getTime());
+
+			report_upload_folderPath = "/"+reportYear+"/"+reportMonth;			
+			com.filenet.api.core.Folder yearFolder = null;
+
+			try
+			{
+				yearFolder = Factory.Folder.fetchInstance(objectStore, objectStore.get_RootFolder()+""+reportYear, null);
+
+			}catch(Exception yearFolderException)
+			{
+				yearFolder = Factory.Folder.createInstance(objectStore,null);
+				yearFolder.set_Parent(objectStore.get_RootFolder());
+				yearFolder.set_FolderName(""+reportYear);
+				yearFolder.save(RefreshMode.NO_REFRESH);
+			}
+			try
+			{
+				folder = Factory.Folder.fetchInstance(objectStore, yearFolder.get_PathName()+reportMonth, null);
+
+			}catch(Exception yearFolderException)
+			{
+				folder = Factory.Folder.createInstance(objectStore,null);
+				folder.set_Parent(yearFolder);
+				folder.set_FolderName(reportMonth);
+				folder.save(RefreshMode.NO_REFRESH);
+			}
+		}
+
+		return report_upload_folderPath;
+	}
+
+	/**
+	 * This method is used to create required date string.
+	 * @param date
+	 * @return date in required format.
+	 * @throws ParseException
+	 */
 	private String getConvertedDate(String date) throws ParseException {
 
 		Calendar calendar = Calendar.getInstance();
@@ -267,6 +313,6 @@ public class DocumentPurgeExecutor extends Thread {
 			month = "" + numberMonth;
 
 		return calendar.get(Calendar.YEAR) + "" + month + "" + calendar.get(Calendar.DATE) + ""
-				+ DocumentPurgeConfigLoader.timezone_offset;
+		+ DocumentPurgeConfigLoader.timezone_offset;
 	}
 }

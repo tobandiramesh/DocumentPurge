@@ -29,6 +29,11 @@ public class DocumentPurgeConfigLoader {
 	public static int tool_processThread = 1;
 	static String className = "DocumentPurgeToolConfigLoader";
 
+	/** This method is used to load the configuration data values.
+	 * 
+	 * @param configFile
+	 * @throws Exception
+	 */
 	public void loadDocumentPurgeToolConfigurartion(String configFile) throws Exception {
 		String methodName = "loadDocumentPurgeToolConfigurartion";
 		try {
