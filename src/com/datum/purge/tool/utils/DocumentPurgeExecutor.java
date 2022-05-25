@@ -234,7 +234,7 @@ public class DocumentPurgeExecutor extends Thread {
 			doc.save(RefreshMode.NO_REFRESH);
 			String[] props = { "ID", "ClassDescription" };
 			doc.fetchProperties(props);
-			System.out.println("Document created: " + doc.get_Id());
+			System.out.println("Report uploaded: " + doc.get_Id());
 
 			// File the document into folder
 			com.filenet.api.core.Folder folder = Factory.Folder.getInstance(objectStore, "Folder",
